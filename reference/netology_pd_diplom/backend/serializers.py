@@ -87,3 +87,14 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = ('id', 'ordered_items', 'state', 'dt', 'total_sum', 'contact',)
         read_only_fields = ('id',)
+
+
+class AllProductsSerializer(serializers.ModelSerializer):
+
+    product_parameters = ProductParameterSerializer(read_only=True, many=True)
+    shop_name = serializers.CharField(source='shop.name', read_only=True)
+    category_name = serializers.CharField(source='product.category.name', read_only=True)
+    class Meta:
+        model = ProductInfo
+        fields = ('external_id','shop_name','category_name', 'model', 'product', 'quantity', 'price', 'price_rrc', 'product_parameters',)
+        read_only_fields = ('id',)

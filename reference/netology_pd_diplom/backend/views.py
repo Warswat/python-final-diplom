@@ -18,27 +18,14 @@ from yaml import load as load_yaml, Loader
 from backend.models import Shop, Category, Product, ProductInfo, Parameter, ProductParameter, Order, OrderItem, \
     Contact, ConfirmEmailToken
 from backend.serializers import UserSerializer, CategorySerializer, ShopSerializer, ProductInfoSerializer, \
-    OrderItemSerializer, OrderSerializer, ContactSerializer
+    OrderItemSerializer, OrderSerializer, ContactSerializer, AllProductsSerializer
 from backend.signals import new_user_registered, new_order
 
 
 class RegisterAccount(APIView):
-    """
-    Для регистрации покупателей
-    """
-
     # Регистрация методом POST
 
     def post(self, request, *args, **kwargs):
-        """
-            Process a POST request and create a new user.
-
-            Args:
-                request (Request): The Django request object.
-
-            Returns:
-                JsonResponse: The response indicating the status of the operation and any errors.
-            """
         # проверяем обязательные аргументы
         if {'first_name', 'last_name', 'email', 'password', 'company', 'position'}.issubset(request.data):
 
@@ -89,6 +76,7 @@ class ConfirmAccount(APIView):
 
             token = ConfirmEmailToken.objects.filter(user__email=request.data['email'],
                                                      key=request.data['token']).first()
+            print(token)
             if token:
                 token.user.is_active = True
                 token.user.save()
@@ -192,9 +180,9 @@ class LoginAccount(APIView):
 
                     return JsonResponse({'Status': True, 'Token': token.key})
 
-            return JsonResponse({'Status': False, 'Errors': 'Не удалось авторизовать'})
+            return JsonResponse({'Status': False, 'Errors': 'Unable to authorize'})
 
-        return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
+        return JsonResponse({'Status': False, 'Errors': 'No args passed'})
 
 
 class CategoryView(ListAPIView):
@@ -394,16 +382,10 @@ class BasketView(APIView):
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
 
 
+
+
 class PartnerUpdate(APIView):
-    """
-    A class for updating partner information.
 
-    Methods:
-    - post: Update the partner information.
-
-    Attributes:
-    - None
-    """
 
     def post(self, request, *args, **kwargs):
         """
@@ -736,3 +718,12 @@ class OrderView(APIView):
                         return JsonResponse({'Status': True})
 
         return JsonResponse({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'})
+
+
+class ShopProducts(APIView):
+
+    def get(self, request, *args, **kwargs):
+
+        products = ProductInfo.objects.filter(shop__id=request.data.get('id'))
+        serializer = AllProductsSerializer(products, many=True)
+        return Response(serializer.data)

@@ -59,7 +59,7 @@ def new_user_registered_signal(sender: Type[User], instance: User, created: bool
             [instance.email]
         )
         msg.send()
-
+        print("msg sent")
 
 @receiver(new_order)
 def new_order_signal(user_id, **kwargs):

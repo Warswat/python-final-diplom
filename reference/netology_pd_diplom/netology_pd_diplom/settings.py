@@ -24,7 +24,11 @@ SECRET_KEY = '=hs6$#5om031nujz4staql9mbuste=!dc^6)4opsjq!vvjxzj@'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*',
+                 '0.0.0.0.',
+                 '0.0.0.0:8000',
+                 'localhost',
+                 ]
 
 # Application definition
 
@@ -78,10 +82,13 @@ WSGI_APPLICATION = 'netology_pd_diplom.wsgi.application'
 DATABASES = {
 
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'netology_diplom3',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+        'PASSWORD': '201224',
+        'USER': 'postgres',
     }
-
 
 }
 
